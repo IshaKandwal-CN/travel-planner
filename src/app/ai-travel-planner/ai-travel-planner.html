@@ -1,58 +1,76 @@
-<div class="min-h-screen bg-gradient-to-br from-purple-800 to-purple-400 flex items-center justify-center p-6" *ngIf="!authService.isAuthenticated()">
-  <div class="text-center bg-white/20 backdrop-blur-md rounded-2xl p-8 shadow-lg">
+<!-- Login Screen (Image 2 style) -->
+<div class="min-h-screen bg-gradient-to-br from-purple-900 to-purple-800 flex items-center justify-center p-6" *ngIf="!authService.isAuthenticated()">
+  <div class="text-center bg-white/15 backdrop-blur-lg rounded-3xl p-8 shadow-2xl max-w-md w-full border border-white/20">
     <div class="flex justify-center mb-6">
-      <mat-icon class="w-16 h-16 text-purple-200">airplanemode_active</mat-icon>
+      <div class="bg-orange-500 rounded-full p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z" />
+        </svg>
+      </div>
     </div>
-    <h1 class="text-3xl font-bold text-white mb-4">AI Travel Planner</h1>
-    <p class="text-white/80 mb-6">Please sign in to plan your perfect trip</p>
-    <button (click)="login()" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+    <h1 class="text-4xl font-bold text-white mb-3">Welcome Back</h1>
+    <p class="text-white/80 mb-8 text-lg">Sign in to resume planning your perfect trip</p>
+    <button (click)="login()" class="w-full px-6 py-4 bg-white/20 hover:bg-white/25 text-white rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3 font-semibold border border-white/30">
+      <svg class="w-6 h-6" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
       Sign In with Google
     </button>
   </div>
 </div>
 
-<div *ngIf="authService.isAuthenticated()" class="min-h-screen bg-gradient-to-br from-purple-800 to-purple-400 p-6 flex items-center justify-center">
-  <div class="max-w-md w-full bg-white/20 backdrop-blur-md rounded-2xl p-6 shadow-lg">
+<!-- Main Travel Planner (Image 1 style) -->
+<div *ngIf="authService.isAuthenticated()" class="min-h-screen bg-gradient-to-br from-blue-600 via-teal-500 to-pink-400 p-6 flex items-center justify-center relative">
+  <!-- Decorative Star -->
+  <div class="star-decoration"></div>
+  
+  <div class="max-w-lg w-full bg-white/20 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/30">
     <!-- Header -->
     <div class="text-center mb-6">
       <div class="flex justify-center mb-4">
-        <div class="bg-white/30 rounded-full p-3">
-          <mat-icon class="w-12 h-12 text-purple-200">airplanemode_active</mat-icon>
+        <div class="bg-white/25 rounded-full p-4 shadow-lg">
+          <mat-icon class="w-12 h-12 text-white">airplanemode_active</mat-icon>
         </div>
       </div>
-      <h1 class="text-3xl font-bold text-white mb-2">AI Travel Planner</h1>
-      <p class="text-sm text-white/80">Enter your preferences and let AI craft your perfect journey</p>
+      <h1 class="text-4xl font-bold text-white mb-2">AI Travel Planner</h1>
+      <p class="text-base text-white/90">Enter your preferences and let AI craft your perfect journey</p>
     </div>
 
-    <!-- Auth Status -->
-    <div class="text-center mb-4">
-      <button (click)="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+    <!-- Logout Button -->
+    <div class="text-center mb-6">
+      <button (click)="logout()" class="px-6 py-2 bg-red-500/80 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-semibold">
         Logout
       </button>
-      <p *ngIf="authService.error$ | async as error" class="text-red-400 text-sm mt-2">{{ error }}</p>
+      <p *ngIf="authService.error$ | async as error" class="text-orange-400 text-sm mt-2">{{ error }}</p>
     </div>
 
     <!-- Form -->
-    <div class="space-y-4" *ngIf="step === 'input'">
+    <div class="space-y-5" *ngIf="step === 'input'">
       <!-- Destination -->
       <div>
-        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
-          <mat-icon class="w-5 h-5">place</mat-icon>
+        <label class="block text-white text-sm font-semibold mb-2 flex items-center gap-2">
+          <mat-icon class="text-white" style="font-size: 1.25rem;">place</mat-icon>
           Destination
         </label>
         <input type="text" [(ngModel)]="destination" placeholder="Where do you want to go?"
-          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+          class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-orange-400 text-base backdrop-blur-md transition-all" />
       </div>
 
       <!-- Budget -->
       <div>
-        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
-          <mat-icon class="w-5 h-5">attach_money</mat-icon>
-          Budget
+        <label class="block text-white text-sm font-semibold mb-2 flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <mat-icon class="text-white" style="font-size: 1.25rem;">attach_money</mat-icon>
+            Budget: ${{budget}}
+          </span>
         </label>
         <input type="range" min="1000" max="20000" step="500" [(ngModel)]="budget"
-          class="w-full h-2 bg-white/10 rounded-lg cursor-pointer accent-purple-500" />
-        <div class="flex justify-between text-white/70 text-xs mt-1">
+          class="w-full h-2 rounded-lg cursor-pointer" 
+          [style.--value]="((budget - 1000) / (20000 - 1000) * 100) + '%'" />
+        <div class="flex justify-between text-white/70 text-xs mt-2 font-medium">
           <span>$1,000</span>
           <span>$20,000</span>
         </div>
@@ -60,35 +78,38 @@
 
       <!-- Travelers -->
       <div>
-        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
-          <mat-icon class="w-5 h-5">group</mat-icon>
+        <label class="block text-white text-sm font-semibold mb-2 flex items-center gap-2">
+          <mat-icon class="text-white" style="font-size: 1.25rem;">group</mat-icon>
           Travelers
         </label>
-        <input type="number" min="1" max="10" [(ngModel)]="travelers"
-          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+        <input type="number" min="1" max="10" [(ngModel)]="travelers" placeholder="2"
+          class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-orange-400 text-base backdrop-blur-md transition-all" />
       </div>
 
       <!-- Duration -->
       <div>
-        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
-          <mat-icon class="w-5 h-5">calendar_today</mat-icon>
+        <label class="block text-white text-sm font-semibold mb-2 flex items-center gap-2">
+          <mat-icon class="text-white" style="font-size: 1.25rem;">calendar_today</mat-icon>
           Duration (days)
         </label>
-        <input type="number" min="1" max="30" [(ngModel)]="duration"
-          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+        <input type="number" min="1" max="30" [(ngModel)]="duration" placeholder="7"
+          class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-orange-400 text-base backdrop-blur-md transition-all" />
       </div>
 
       <!-- Travel Style -->
       <div>
-        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
-          <mat-icon class="w-5 h-5">star</mat-icon>
+        <label class="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
+          <mat-icon class="text-white" style="font-size: 1.25rem;">star</mat-icon>
           Travel Style
         </label>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-3">
           <button *ngFor="let pref of preferences | keyvalue"
             (click)="togglePreference(pref.key)"
-            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors"
-            [ngClass]="{'bg-purple-500': preferences[pref.key]}">
+            class="px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all backdrop-blur-md border"
+            [ngClass]="{
+              'bg-teal-600 hover:bg-teal-700 border-white/40': preferences[pref.key],
+              'bg-white/10 hover:bg-white/20 border-white/30': !preferences[pref.key]
+            }">
             {{ pref.key.charAt(0).toUpperCase() + pref.key.slice(1) }}
           </button>
         </div>
@@ -96,51 +117,45 @@
 
       <!-- Generate Button -->
       <button (click)="generateItinerary()" [disabled]="!destination || !authService.isAuthenticated()"
-        class="w-full py-3 bg-yellow-600 text-white font-semibold rounded-lg mt-4 hover:bg-yellow-700 transition-colors disabled:opacity-50">
+        class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl mt-6 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl text-base flex items-center justify-center gap-2">
+        <mat-icon style="font-size: 1.25rem;">travel_explore</mat-icon>
         Generate My Perfect Trip
       </button>
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="step === 'loading'" class="text-center">
-      <div class="relative">
-        <mat-icon class="w-24 h-24 text-white animate-spin mx-auto mb-6" style="animation-duration: 3s;">public</mat-icon>
-        <mat-icon class="w-12 h-12 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse">airplanemode_active</mat-icon>
+    <div *ngIf="step === 'loading'" class="text-center py-8">
+      <div class="relative inline-block mb-6">
+        <mat-icon class="w-16 h-16 text-white animate-spin" style="animation-duration: 2s;">public</mat-icon>
       </div>
-      <h2 class="text-4xl font-bold text-white mb-4">Planning Your Perfect Trip</h2>
-      <p class="text-xl text-white/90">AI is crafting your personalized itinerary...</p>
-      <div class="mt-8 flex justify-center gap-2">
-        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0s;"></div>
-        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
-        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
-      </div>
+      <h2 class="text-3xl font-bold text-white mb-3">Planning Your Perfect Trip</h2>
+      <p class="text-lg text-white/90">AI is crafting your personalized itinerary...</p>
     </div>
 
     <!-- Results State -->
-    <div *ngIf="step === 'results'" class="text-center">
-      <h2 class="text-3xl font-bold text-white mb-4">Your Itinerary</h2>
-      <p class="text-white/80 mb-4">{{ itineraryText }}</p>
-      <!-- Add more detailed itinerary display here if needed -->
-      <button (click)="setStep('input')" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 mt-4">
+    <div *ngIf="step === 'results'" class="text-center py-8">
+      <h2 class="text-3xl font-bold text-white mb-4">Your Itinerary is Ready!</h2>
+      <p class="text-white/90 mb-6 text-base">{{ itineraryText }}</p>
+      <button (click)="setStep('input')" class="px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl transition-all font-semibold">
         Plan Another Trip
       </button>
     </div>
 
     <!-- Feature Cards -->
-    <div class="grid grid-cols-1 gap-4 mt-6" *ngIf="step === 'input'">
-      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
-        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">airplanemode_active</mat-icon>
-        <h3 class="text-white text-sm font-medium">Smart Flight Matching</h3>
+    <div class="grid grid-cols-1 gap-3 mt-6" *ngIf="step === 'input'">
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/15 transition-all">
+        <mat-icon class="text-white mb-2" style="font-size: 2rem;">airplanemode_active</mat-icon>
+        <h3 class="text-white text-sm font-semibold mb-1">Smart Flight Matching</h3>
         <p class="text-white/70 text-xs">AI finds the best flight deals for your budget</p>
       </div>
-      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
-        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">hotel</mat-icon>
-        <h3 class="text-white text-sm font-medium">Curated Hotels</h3>
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/15 transition-all">
+        <mat-icon class="text-white mb-2" style="font-size: 2rem;">hotel</mat-icon>
+        <h3 class="text-white text-sm font-semibold mb-1">Curated Hotels</h3>
         <p class="text-white/70 text-xs">Handpicked accommodations matching your style</p>
       </div>
-      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
-        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">event_note</mat-icon>
-        <h3 class="text-white text-sm font-medium">Day-by-Day Plans</h3>
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/15 transition-all">
+        <mat-icon class="text-white mb-2" style="font-size: 2rem;">event_note</mat-icon>
+        <h3 class="text-white text-sm font-semibold mb-1">Day-by-Day Plans</h3>
         <p class="text-white/70 text-xs">Complete itineraries with activities & dining</p>
       </div>
     </div>
