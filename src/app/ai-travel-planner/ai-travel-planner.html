@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-800 to-purple-400 flex items-center justify-center p-6" *ngIf="!authService.isAuthenticated()">
+  <div class="text-center bg-white/20 backdrop-blur-md rounded-2xl p-8 shadow-lg">
+    <div class="flex justify-center mb-6">
+      <mat-icon class="w-16 h-16 text-purple-200">airplanemode_active</mat-icon>
+    </div>
+    <h1 class="text-3xl font-bold text-white mb-4">AI Travel Planner</h1>
+    <p class="text-white/80 mb-6">Please sign in to plan your perfect trip</p>
+    <button (click)="login()" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+      Sign In with Google
+    </button>
+  </div>
+</div>
+
+<div *ngIf="authService.isAuthenticated()" class="min-h-screen bg-gradient-to-br from-purple-800 to-purple-400 p-6 flex items-center justify-center">
+  <div class="max-w-md w-full bg-white/20 backdrop-blur-md rounded-2xl p-6 shadow-lg">
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <div class="flex justify-center mb-4">
+        <div class="bg-white/30 rounded-full p-3">
+          <mat-icon class="w-12 h-12 text-purple-200">airplanemode_active</mat-icon>
+        </div>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">AI Travel Planner</h1>
+      <p class="text-sm text-white/80">Enter your preferences and let AI craft your perfect journey</p>
+    </div>
+
+    <!-- Auth Status -->
+    <div class="text-center mb-4">
+      <button (click)="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+        Logout
+      </button>
+      <p *ngIf="authService.error$ | async as error" class="text-red-400 text-sm mt-2">{{ error }}</p>
+    </div>
+
+    <!-- Form -->
+    <div class="space-y-4" *ngIf="step === 'input'">
+      <!-- Destination -->
+      <div>
+        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
+          <mat-icon class="w-5 h-5">place</mat-icon>
+          Destination
+        </label>
+        <input type="text" [(ngModel)]="destination" placeholder="Where do you want to go?"
+          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+      </div>
+
+      <!-- Budget -->
+      <div>
+        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
+          <mat-icon class="w-5 h-5">attach_money</mat-icon>
+          Budget
+        </label>
+        <input type="range" min="1000" max="20000" step="500" [(ngModel)]="budget"
+          class="w-full h-2 bg-white/10 rounded-lg cursor-pointer accent-purple-500" />
+        <div class="flex justify-between text-white/70 text-xs mt-1">
+          <span>$1,000</span>
+          <span>$20,000</span>
+        </div>
+      </div>
+
+      <!-- Travelers -->
+      <div>
+        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
+          <mat-icon class="w-5 h-5">group</mat-icon>
+          Travelers
+        </label>
+        <input type="number" min="1" max="10" [(ngModel)]="travelers"
+          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+      </div>
+
+      <!-- Duration -->
+      <div>
+        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
+          <mat-icon class="w-5 h-5">calendar_today</mat-icon>
+          Duration (days)
+        </label>
+        <input type="number" min="1" max="30" [(ngModel)]="duration"
+          class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:border-purple-300 text-base" />
+      </div>
+
+      <!-- Travel Style -->
+      <div>
+        <label class="block text-white text-sm font-medium mb-2 flex items-center gap-2">
+          <mat-icon class="w-5 h-5">star</mat-icon>
+          Travel Style
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          <button *ngFor="let pref of preferences | keyvalue"
+            (click)="togglePreference(pref.key)"
+            class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors"
+            [ngClass]="{'bg-purple-500': preferences[pref.key]}">
+            {{ pref.key.charAt(0).toUpperCase() + pref.key.slice(1) }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button (click)="generateItinerary()" [disabled]="!destination || !authService.isAuthenticated()"
+        class="w-full py-3 bg-yellow-600 text-white font-semibold rounded-lg mt-4 hover:bg-yellow-700 transition-colors disabled:opacity-50">
+        Generate My Perfect Trip
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="step === 'loading'" class="text-center">
+      <div class="relative">
+        <mat-icon class="w-24 h-24 text-white animate-spin mx-auto mb-6" style="animation-duration: 3s;">public</mat-icon>
+        <mat-icon class="w-12 h-12 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse">airplanemode_active</mat-icon>
+      </div>
+      <h2 class="text-4xl font-bold text-white mb-4">Planning Your Perfect Trip</h2>
+      <p class="text-xl text-white/90">AI is crafting your personalized itinerary...</p>
+      <div class="mt-8 flex justify-center gap-2">
+        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+        <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+      </div>
+    </div>
+
+    <!-- Results State -->
+    <div *ngIf="step === 'results'" class="text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Your Itinerary</h2>
+      <p class="text-white/80 mb-4">{{ itineraryText }}</p>
+      <!-- Add more detailed itinerary display here if needed -->
+      <button (click)="setStep('input')" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 mt-4">
+        Plan Another Trip
+      </button>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="grid grid-cols-1 gap-4 mt-6" *ngIf="step === 'input'">
+      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
+        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">airplanemode_active</mat-icon>
+        <h3 class="text-white text-sm font-medium">Smart Flight Matching</h3>
+        <p class="text-white/70 text-xs">AI finds the best flight deals for your budget</p>
+      </div>
+      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
+        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">hotel</mat-icon>
+        <h3 class="text-white text-sm font-medium">Curated Hotels</h3>
+        <p class="text-white/70 text-xs">Handpicked accommodations matching your style</p>
+      </div>
+      <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 text-center">
+        <mat-icon class="w-8 h-8 text-purple-200 mx-auto mb-2">event_note</mat-icon>
+        <h3 class="text-white text-sm font-medium">Day-by-Day Plans</h3>
+        <p class="text-white/70 text-xs">Complete itineraries with activities & dining</p>
+      </div>
+    </div>
+  </div>
+</div>

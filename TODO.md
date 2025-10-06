@@ -1,0 +1,5 @@
+- [x] Fix auth.service.ts: Import authState and update user$ to use authState(this.auth)
+- [x] Fix ai-travel-planner.ts: Change authService.error.set to .next in generateItinerary and catch block, add itineraryText property
+- [x] Fix ai-travel-planner.html: Change authService.error() to (authService.error | async)
+- [x] Fix main.ts: Change provideExperimentalZonelessChangeDetection to provideZonelessChangeDetection
+- [x] Run ng build to verify all errors are fixed
