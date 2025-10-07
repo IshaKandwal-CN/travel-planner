@@ -44,7 +44,8 @@
       <button (click)="logout()" class="px-6 py-2 bg-red-500/80 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-semibold">
         Logout
       </button>
-      <p *ngIf="authService.error$ | async as error" class="text-orange-400 text-sm mt-2">{{ error }}</p>
+      <p *ngIf="authService.error()" class="text-orange-400 text-sm mt-2">{{ authService.error() }}</p>
+
     </div>
 
     <!-- Form -->
@@ -124,13 +125,25 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="step === 'loading'" class="text-center py-8">
+    <!-- <div *ngIf="step === 'loading'" class="text-center py-8">
       <div class="relative inline-block mb-6">
         <mat-icon class="w-16 h-16 text-white animate-spin" style="animation-duration: 2s;">public</mat-icon>
       </div>
       <h2 class="text-3xl font-bold text-white mb-3">Planning Your Perfect Trip</h2>
       <p class="text-lg text-white/90">AI is crafting your personalized itinerary...</p>
-    </div>
+    </div> -->
+    <!-- Loading State with Streaming Text -->
+<div *ngIf="step === 'loading'" class="text-center py-8">
+  <div class="relative inline-block mb-6">
+    <mat-icon class="w-16 h-16 text-white animate-spin" style="animation-duration: 2s;">public</mat-icon>
+  </div>
+  <h2 class="text-3xl font-bold text-white mb-3">Planning Your Perfect Trip</h2>
+  <p class="text-lg text-white/90">AI is crafting your personalized itinerary...</p>
+
+  <!-- ✅ Live streamed text -->
+  <pre class="mt-4 p-4 bg-white/10 text-left text-white/90 rounded-xl max-h-96 overflow-y-auto">{{ itineraryText }}</pre>
+</div>
+
 
     <!-- Results State -->
     <div *ngIf="step === 'results'" class="text-center py-8">

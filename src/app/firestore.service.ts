@@ -20,7 +20,6 @@ export class FirestoreService {
   private firestore = inject(Firestore);
   private auth = inject(AuthService);
 
-  // Save a travel plan with full itinerary
   async addPlan(plan: TravelPlan): Promise<any> {
     const user = this.auth.getUser();
     if (!user) throw new Error('User not logged in');
@@ -32,7 +31,6 @@ export class FirestoreService {
     });
   }
 
-  // Get all plans for logged-in user (reactive)
   getPlans(): Observable<TravelPlan[]> {
     return this.auth.user$.pipe(
       switchMap(user => {

@@ -1,54 +1,51 @@
-import { Injectable, inject } from '@angular/core';
-import { Auth, authState, onAuthStateChanged } from '@angular/fire/auth';
-import { signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { Auth, authState, signInWithRedirect, GoogleAuthProvider, signOut, User, getRedirectResult } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private auth: Auth = inject(Auth);
-  public user$: Observable<User | null> = authState(this.auth);
-  public error$ = new BehaviorSubject<string | null>(null);
+  // Signals for reactive state
+  public user = signal<User | null>(null);
+  public error = signal<string | null>(null);
 
-  constructor() {
-    // Note: onAuthStateChanged is already handled by authState()
-    // This is optional/redundant but can be useful for logging
-    onAuthStateChanged(this.auth, (user) => {
-      if (!user) {
-        console.log('User logged out or not authenticated');
-      }
+  // Observable for template subscriptions if needed
+  public user$: Observable<User | null>;
+
+  constructor(private auth: Auth) {
+    // Expose observable for template usage
+    this.user$ = authState(this.auth);
+
+    // Subscribe to auth state changes
+    this.user$.subscribe((u) => {
+      this.user.set(u);
+    });
+
+    // Handle redirect result for errors
+    getRedirectResult(this.auth).catch((error) => {
+      this.error.set(error.message || 'Login failed');
     });
   }
 
   isAuthenticated(): boolean {
-    return !!this.auth.currentUser;
+    return !!this.user();
   }
 
   getUser(): User | null {
-    return this.auth.currentUser;
+    return this.user();
   }
 
-  async loginWithGoogle(): Promise<void> {
+  loginWithGoogle(): void {
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(this.auth, provider);
-      this.error$.next(null);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      this.error$.next(message);
-      throw error; // Re-throw for component to handle
-    }
+    signInWithRedirect(this.auth, provider);
   }
 
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);
-      this.error$.next(null);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      this.error$.next(message);
-      throw error;
+      this.user.set(null);
+      this.error.set(null);
+    } catch (e: any) {
+      this.error.set(e.message || 'Unknown logout error');
     }
   }
 }

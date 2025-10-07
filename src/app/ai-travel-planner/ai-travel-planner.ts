@@ -1,9 +1,10 @@
-import { Component, Inject } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../auth.service';
 import { FirestoreService } from '../firestore.service';
+import { AiService } from '../ai.service';
 
 @Component({
   selector: 'app-ai-travel-planner',
@@ -26,10 +27,16 @@ export class AITravelPlannerComponent {
     foodie: false
   };
   activeDay: number = 1;
-  itineraryText: string = ''; // Added property to fix template error
+  itineraryText: string = ''; // live streaming text
 
-  constructor(public authService: AuthService, @Inject(FirestoreService) private firestoreService: FirestoreService) {}
+  constructor(
+    public authService: AuthService,
+    private firestoreService: FirestoreService,
+    private aiService: AiService,
+    private ngZone: NgZone // Inject NgZone
+  ) {}
 
+  // Mock itinerary for testing UI
   get mockItinerary() {
     return {
       destination: this.destination || 'Paris, France',
@@ -50,48 +57,81 @@ export class AITravelPlannerComponent {
     };
   }
 
-  generateItinerary(): void {
+  // Generate itinerary with live streaming
+  async generateItinerary(): Promise<void> {
     if (!this.authService.isAuthenticated()) {
-      this.authService.error$.next('Please log in to generate a trip.');
+      this.authService.error.set('Please log in to generate a trip.');
+
       return;
     }
 
     this.step = 'loading';
-    const tripData = {
-      destination: this.destination,
-      budget: this.budget,
-      travelers: this.travelers,
-      duration: this.duration,
-      preferences: this.preferences,
-      itinerary: this.mockItinerary
-    };
-    this.firestoreService.addPlan(tripData).then(() => {
-      setTimeout(() => {
-        this.step = 'results';
-      }, 2000);
-    }).catch((err: any) => {
-      this.authService.error$.next(err.message);
-      this.step = 'input';
-    });
+    this.itineraryText = ''; // clear previous result
+    let finalText = '';
+
+    try {
+      // Stream partial chunks as they arrive
+      await this.aiService.generateItineraryStream(
+        this.destination,
+        this.duration,
+        this.budget,
+        this.travelers,
+        this.preferences,
+        (chunk: string) => {
+          // Run UI updates inside Angular's zone to ensure change detection
+          this.ngZone.run(() => {
+            this.itineraryText += chunk;
+          });
+        }
+      );
+
+      // After streaming finishes, save full text
+      finalText = this.itineraryText;
+
+      const tripData = {
+        destination: this.destination,
+        budget: this.budget,
+        travelers: this.travelers,
+        duration: this.duration,
+        preferences: this.preferences,
+        itinerary: finalText
+      };
+
+      await this.firestoreService.addPlan(tripData);
+      this.step = 'results';
+    } catch (err: any) {
+      console.error('Streaming error:', err);
+      // Ensure error state updates are also within the zone
+      this.ngZone.run(() => {
+        this.authService.error.set(err.message || 'Failed to generate itinerary');
+
+        this.step = 'input';
+      });
+    }
   }
 
+  // Toggle travel preference
   togglePreference(pref: string): void {
     this.preferences[pref] = !this.preferences[pref];
   }
 
-  setStep(step: string): void {
-    this.step = step;
-  }
-
-  setActiveDay(day: number): void {
-    this.activeDay = day;
-  }
-
+  // Login via auth service
   login(): void {
     this.authService.loginWithGoogle();
   }
 
+  // Logout via auth service
   logout(): void {
     this.authService.logout();
+  }
+
+  // Change step state
+  setStep(step: string): void {
+    this.step = step;
+  }
+
+  // Set active day for itinerary UI
+  setActiveDay(day: number): void {
+    this.activeDay = day;
   }
 }

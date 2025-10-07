@@ -1,5 +1,6 @@
-- [x] Fix auth.service.ts: Import authState and update user$ to use authState(this.auth)
-- [x] Fix ai-travel-planner.ts: Change authService.error.set to .next in generateItinerary and catch block, add itineraryText property
-- [x] Fix ai-travel-planner.html: Change authService.error() to (authService.error | async)
-- [x] Fix main.ts: Change provideExperimentalZonelessChangeDetection to provideZonelessChangeDetection
-- [x] Run ng build to verify all errors are fixed
+- [x] Create proxy.conf.json for Angular dev proxy
+- [x] Update angular.json to use proxy config
+- [x] Change backendUrl in ai.service.ts to use /api
+- [x] Create backend/.env with GEMINI_API_KEY
+- [x] Change auth to use signInWithRedirect if popup fails
+- [x] Fix login issue by changing to signInWithPopup for Google auth
